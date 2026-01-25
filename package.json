@@ -1,0 +1,11 @@
+{
+  "packageManager": "bun@1.3.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "turbo": "^2.7.6"
+  }
+}
