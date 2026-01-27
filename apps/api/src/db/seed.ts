@@ -115,7 +115,7 @@ async function seed() {
       holidayDate: h.date,
       holidayName: h.name,
     });
-    console.log(`${h.date} - ${h.name}`);
+    console.log(`  ✓ ${h.date} - ${h.name}`);
   }
 
   // Seed default market settings
