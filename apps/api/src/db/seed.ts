@@ -1,17 +1,67 @@
-import { db } from "./setup";
 import * as schema from "./schema";
+import { db } from "./setup";
 
 const stocks = [
-  { ticker: "AAPL", companyName: "Apple Inc.", totalVolume: 55_000_000, initialPrice: 255.5 },
-  { ticker: "GOOGL", companyName: "Alphabet Inc. Class A", totalVolume: 26_000_000, initialPrice: 335.5 },
-  { ticker: "GOOG", companyName: "Alphabet Inc. Class C", totalVolume: 18_000_000, initialPrice: 335.5 },
-  { ticker: "MSFT", companyName: "Microsoft Corporation", totalVolume: 29_000_000, initialPrice: 470.2 },
-  { ticker: "AMZN", companyName: "Amazon.com Inc.", totalVolume: 38_000_000, initialPrice: 238.4 },
-  { ticker: "NVDA", companyName: "NVIDIA Corporation", totalVolume: 124_000_000, initialPrice: 186.4 },
-  { ticker: "META", companyName: "Meta Platforms Inc.", totalVolume: 16_000_000, initialPrice: 672.3 },
-  { ticker: "TSLA", companyName: "Tesla Inc.", totalVolume: 71_000_000, initialPrice: 435.2 },
-  { ticker: "JPM", companyName: "JPMorgan Chase & Co.", totalVolume: 11_000_000, initialPrice: 301.0 },
-  { ticker: "V", companyName: "Visa Inc.", totalVolume: 7_000_000, initialPrice: 328.5 },
+  {
+    ticker: "AAPL",
+    companyName: "Apple Inc.",
+    totalVolume: 55_000_000,
+    initialPrice: 255.5,
+  },
+  {
+    ticker: "GOOGL",
+    companyName: "Alphabet Inc. Class A",
+    totalVolume: 26_000_000,
+    initialPrice: 335.5,
+  },
+  {
+    ticker: "GOOG",
+    companyName: "Alphabet Inc. Class C",
+    totalVolume: 18_000_000,
+    initialPrice: 335.5,
+  },
+  {
+    ticker: "MSFT",
+    companyName: "Microsoft Corporation",
+    totalVolume: 29_000_000,
+    initialPrice: 470.2,
+  },
+  {
+    ticker: "AMZN",
+    companyName: "Amazon.com Inc.",
+    totalVolume: 38_000_000,
+    initialPrice: 238.4,
+  },
+  {
+    ticker: "NVDA",
+    companyName: "NVIDIA Corporation",
+    totalVolume: 124_000_000,
+    initialPrice: 186.4,
+  },
+  {
+    ticker: "META",
+    companyName: "Meta Platforms Inc.",
+    totalVolume: 16_000_000,
+    initialPrice: 672.3,
+  },
+  {
+    ticker: "TSLA",
+    companyName: "Tesla Inc.",
+    totalVolume: 71_000_000,
+    initialPrice: 435.2,
+  },
+  {
+    ticker: "JPM",
+    companyName: "JPMorgan Chase & Co.",
+    totalVolume: 11_000_000,
+    initialPrice: 301.0,
+  },
+  {
+    ticker: "V",
+    companyName: "Visa Inc.",
+    totalVolume: 7_000_000,
+    initialPrice: 328.5,
+  },
 ];
 
 const holidays2025 = [
