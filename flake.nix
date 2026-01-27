@@ -20,6 +20,7 @@
             packages = with pkgs; [
               bun
               turbo
+              process-compose
             ];
           };
         };

@@ -1,0 +1,55 @@
+version: "0.5"
+
+processes:
+  postgres:
+    command: |
+      podman run --rm \
+      --name drizzle-postgres \
+      -e POSTGRES_PASSWORD=mypassword \
+      -p 5432:5432 \
+      postgres
+    availability:
+      restart: on_failure
+      max_restarts: 3
+    readiness_probe:
+      exec:
+        command: "podman exec drizzle-postgres pg_isready -U postgres"
+      initial_delay_seconds: 3
+      period_seconds: 3
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 5
+    shutdown:
+      command: "podman stop drizzle-postgres"
+      timeout_seconds: 5
+
+  db-push:
+    command: "bun run db:push"
+    working_dir: ./apps/api
+    depends_on:
+      postgres:
+        condition: process_healthy
+    availability:
+      restart: "no"
+
+  api:
+    command: "bun run dev"
+    working_dir: ./apps/api
+    depends_on:
+      postgres:
+        condition: process_healthy
+      db-push:
+        condition: process_completed_successfully
+    availability:
+      restart: on_failure
+      max_restarts: 5
+    readiness_probe:
+      http_get:
+        host: localhost
+        port: 3000
+        path: /health
+      initial_delay_seconds: 3
+      period_seconds: 10
+      timeout_seconds: 3
+      success_threshold: 1
+      failure_threshold: 3
