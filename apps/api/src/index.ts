@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
-import { auth } from './lib/auth'
+import { auth } from '@lib/auth'
 
 const app = new Hono()
 

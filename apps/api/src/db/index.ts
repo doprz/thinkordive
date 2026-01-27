@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import * as apiSchema from "../db/schema";
-import * as authSchema from "../../auth-schema"
+import * as apiSchema from "@db/schema";
+import * as authSchema from "@db/auth-schema"
 
 const schema = {
   ...apiSchema,

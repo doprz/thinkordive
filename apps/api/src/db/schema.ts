@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { bigint, date, decimal, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import { user } from "../../auth-schema";
+import { user } from "@db/auth-schema";
 
 export const cashAccount = pgTable(
   "cash_account",
