@@ -1,4 +1,4 @@
-import { db } from ".";
+import { db } from "./setup";
 import * as schema from "./schema";
 
 const stocks = [
