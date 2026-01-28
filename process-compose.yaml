@@ -3,11 +3,16 @@ version: "0.5"
 processes:
   postgres:
     command: |
-      podman run --rm \
-      --name drizzle-postgres \
-      -e POSTGRES_PASSWORD=mypassword \
-      -p 5432:5432 \
-      postgres
+      if ! podman container exists drizzle-postgres; then
+        echo "Creating new container..."
+        podman create \
+        --name drizzle-postgres \
+        -e POSTGRES_PASSWORD=mypassword \
+        -p 5432:5432 \
+        postgres
+      fi
+      echo "Starting container..."
+      podman start -a drizzle-postgres
     availability:
       restart: on_failure
       max_restarts: 3
@@ -53,3 +58,39 @@ processes:
       timeout_seconds: 3
       success_threshold: 1
       failure_threshold: 3
+
+  db-seed:
+    command: "bun run db:seed"
+    working_dir: ./apps/api
+    depends_on:
+      postgres:
+        condition: process_healthy
+      api:
+        condition: process_healthy
+    availability:
+      restart: "no"
+    disabled: true
+
+  db-init-admin:
+    command: "bun run db:initAdmin"
+    working_dir: ./apps/api
+    depends_on:
+      postgres:
+        condition: process_healthy
+      api:
+        condition: process_healthy
+    availability:
+      restart: "no"
+    disabled: true
+
+  db-studio:
+    command: "bun run db:studio"
+    working_dir: ./apps/api
+    depends_on:
+      postgres:
+        condition: process_healthy
+      api:
+        condition: process_healthy
+    availability:
+      restart: on_failure
+    disabled: true
