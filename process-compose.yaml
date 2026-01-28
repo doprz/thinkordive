@@ -72,7 +72,7 @@ processes:
     disabled: true
 
   db-init-admin:
-    command: "bun run db:initAdmin"
+    command: "bun run db:init-admin"
     working_dir: ./apps/api
     depends_on:
       postgres:
