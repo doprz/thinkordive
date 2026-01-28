@@ -10,7 +10,17 @@ const app = new Hono<{
   };
 }>();
 
-app.use("*", cors());
+app.use(
+  "*",
+  cors({
+    origin: "http://localhost:5173",
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["POST", "GET", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
+    credentials: true,
+  }),
+);
 app.use("*", logger());
 
 // Custom middleware to save the session and user in a context
@@ -27,6 +37,26 @@ app.use("*", async (c, next) => {
   c.set("user", session.user);
   c.set("session", session.session);
   await next();
+});
+
+// Custom middleware to only allow users with the admin role to access these routes
+app.use("/api/admin/*", async (c, next) => {
+  const user = c.get("user");
+
+  if (!user || user.role !== "admin")
+    return c.json({ error: "Forbidden" }, 403);
+  await next();
+});
+
+// Example endpoint to test middleware and auth
+app.get("/api/admin/session", (c) => {
+  const session = c.get("session");
+  const user = c.get("user");
+
+  return c.json({
+    session,
+    user,
+  });
 });
 
 app.get("/health", (c) => c.json({ status: "ok" }));
