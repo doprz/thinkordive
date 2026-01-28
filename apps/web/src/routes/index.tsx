@@ -1,8 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ComponentExample } from "@/components/component-example";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/")({
+  component: Index,
+});
 
-function App() {
-  return <ComponentExample />;
+function Index() {
+  const { isAuthenticated } = useAuth();
+
+  // Temporary: assume the user is admin
+  if (isAuthenticated) {
+    return <Navigate to="/admin" />;
+  }
+
+  // TODO: Handle regular users
+
+  return <Navigate to="/login" />;
 }
