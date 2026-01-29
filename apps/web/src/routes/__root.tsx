@@ -2,6 +2,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { NotFound } from "@/components/not-found";
+import { getSSRTheme } from "@/lib/ssr-theme";
 import { ThemeProvider } from "@/lib/theme-provider";
 import appCss from "../styles.css?url";
 
@@ -27,33 +28,34 @@ export const Route = createRootRoute({
     ],
   }),
 
+  loader: () => getSSRTheme(),
   shellComponent: RootDocument,
   notFoundComponent: NotFound,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  // Apply the theme via the server function before hydration
+  const theme = Route.useLoaderData();
   return (
-    <html lang="en">
+    <html lang="en" className={theme} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <body>
-          {children}
-          <TanStackDevtools
-            config={{
-              position: "bottom-right",
-            }}
-            plugins={[
-              {
-                name: "Tanstack Router",
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
-          <Scripts />
-        </body>
-      </ThemeProvider>
+      <body>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        <TanStackDevtools
+          config={{
+            position: "bottom-right",
+          }}
+          plugins={[
+            {
+              name: "Tanstack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
+        <Scripts />
+      </body>
     </html>
   );
 }

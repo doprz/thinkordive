@@ -1,65 +1,38 @@
-import { createContext, useContext, useEffect, useState } from "react";
-
-type Theme = "dark" | "light" | "system";
-
-type ThemeProviderProps = {
-  children: React.ReactNode;
-  defaultTheme?: Theme;
-  storageKey?: string;
-};
+import { useRouter } from "@tanstack/react-router";
+import { createContext, type PropsWithChildren, useContext } from "react";
+import { setSSRTheme, type Theme } from "./ssr-theme";
 
 type ThemeProviderState = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
 };
 
-const initialState: ThemeProviderState = {
+const initState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
 };
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+const ThemeProviderContext = createContext<ThemeProviderState>(initState);
+
+type ThemeProviderProps = PropsWithChildren<{
+  theme: Theme;
+}>;
 
 export function ThemeProvider({
+  theme,
   children,
-  defaultTheme = "system",
-  storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    // This fails in SSR
-    // () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
-    defaultTheme,
-  );
+  const router = useRouter();
 
-  useEffect(() => {
-    const root = window.document.documentElement;
-
-    root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.classList.add(systemTheme);
-      return;
-    }
-
-    root.classList.add(theme);
-  }, [theme]);
-
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
-    },
-  };
+  function setTheme(theme: Theme) {
+    // Update the theme cookie on the server
+    // and invalidate the router to make sure the new theme is rendered server-side
+    setSSRTheme({ data: theme }).then(() => router.invalidate());
+  }
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeProviderContext.Provider {...props} value={{ theme, setTheme }}>
       {children}
     </ThemeProviderContext.Provider>
   );
