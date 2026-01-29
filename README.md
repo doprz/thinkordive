@@ -51,21 +51,21 @@ thinkordive
 1. Set up the development environment
 
     **Option A: Using Nix + direnv (Recommended)**
-  
+
     If you have direnv installed, allow the `.envrc` file to automatically load the Nix environment:
     ```sh
     direnv allow
     ```
     This will automatically install Bun, Turbo, Process Compose, and other deps into your dev shell whenever you're in the project directory.
     It will unload when you exit and restore your path and env vars.
-  
+
     **Option B: Using Nix without direnv**
-  
+
     ```sh
     nix develop
     ```
     You'll need to run this command each time you want to load the dev shell.
-  
+
     **Option C: Manual Installation** - Install the required tools manually as listed in [Prerequisites](#prerequisites)
 
 2. Install dependencies:
@@ -76,17 +76,25 @@ thinkordive
 3. Set up environment variables:
 
     Create a `.env` file in the `apps/api` directory and add the necessary environment variables (refer to `apps/api/.env.example`).
-    
+
     Generate a Better Auth secret and add it to your `.env`:
     ```sh
     openssl rand -base64 32
     ```
-    
+
     Similarly create a `.env` file in the `apps/web` directory. (Empty for now)
 
 4. Set up the database:
 
-    Create and run a PostgreSQL database, then push the schema using Drizzle ORM:
+    Create and run a PostgreSQL database:
+    ```sh
+    # Using Docker
+    docker run --name drizzle-postgres -e POSTGRES_PASSWORD=mypassword -p 5432:5432 postgres
+
+    # Or using Podman
+    podman run --name drizzle-postgres -e POSTGRES_PASSWORD=mypassword -p 5432:5432 postgres
+    ```
+    Then push the schema using Drizzle ORM:
     ```sh
     cd apps/api
     bun run db:push
@@ -107,7 +115,7 @@ From the root directory:
 bun run dev
 ```
 
-This will start both the frontend and backend concurrently.
+This will start both the frontend and backend concurrently using Turborepo.
 
 #### Run Frontend Only
 
@@ -128,6 +136,15 @@ bun run dev
 The API will be available at `http://localhost:5173`
 
 ## Development
+
+### Process Compose
+
+Process Compose manages your development environment with automatic dependency handling:
+- PostgreSQL runs in a Podman container with health checks
+- Database migrations run automatically after PostgreSQL is ready
+- API starts after migrations complete
+- Frontend starts after API is ready
+- Optional processes (seeding, admin init, studio) can be enabled
 
 ### Database Management
 
