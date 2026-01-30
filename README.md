@@ -12,10 +12,10 @@ A full-stack stock trading simulation platform where users can buy and sell stoc
 
 ## Tech Stack
 
-- **Frontend**: Tanstack Start, React, TypeScript, Tailwind CSS, Shadcn w/ Base UI, Bun, and SSR support
-- **Backend**: Hono, Drizzle ORM, Better Auth, and Bun
+- **Frontend**: Tanstack Start, React, TypeScript, Tailwind CSS, Shadcn w/ Base UI, and SSR support
+- **Backend**: Drizzle ORM and Better Auth
 - **Database**: PostgreSQL
-- **DevOps & Tooling**: Bun, Turborepo, Docker/Podman, Docker Compose, Process Compose, Biome, Nix, and EditorConfig
+- **DevOps & Tooling**: Bun, Docker/Podman, Docker Compose, Process Compose, Biome, Nix, and EditorConfig
 - **Deployment**: TBD
 
 ## Project Structure
