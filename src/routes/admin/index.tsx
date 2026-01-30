@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth-client";
-import { authMiddleware } from "@/middleware/auth";
+import { adminMiddleware } from "@/middleware/auth";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/admin/")({
   component: RouteComponent,
   server: {
-    middleware: [authMiddleware],
+    middleware: [adminMiddleware],
   },
 });
 
@@ -21,7 +21,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <div>Hello "/dashboard"!</div>
+      <div>Hello "/admin/"!</div>
       <pre>{JSON.stringify(sessionData.user, null, 2)}</pre>
       <pre>{JSON.stringify(sessionData.session, null, 2)}</pre>
     </div>

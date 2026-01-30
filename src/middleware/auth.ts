@@ -15,3 +15,20 @@ export const authMiddleware = createMiddleware().server(
     return await next();
   },
 );
+
+export const adminMiddleware = createMiddleware().server(
+  async ({ next, request }) => {
+    const headers = getRequestHeaders();
+    const session = await auth.api.getSession({ headers });
+
+    if (!session) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (session.user.role !== "admin") {
+      throw redirect({ to: "/unauthorized" });
+    }
+
+    return await next();
+  },
+);
