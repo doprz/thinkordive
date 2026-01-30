@@ -1,8 +1,16 @@
-.turbo
 node_modules
-
 .DS_Store
+dist
+dist-ssr
+*.local
+count.txt
 .env
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+todos.json
 
 # Ignore build outputs from performing a nix-build or `nix build` command
 result
