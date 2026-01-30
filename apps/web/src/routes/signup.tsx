@@ -65,8 +65,7 @@ const SignupForm = () => {
           return;
         }
 
-        // TODO:
-        navigate({ to: "/" });
+        navigate({ to: "/dashboard" });
       } catch (err) {
         console.log(err);
       }

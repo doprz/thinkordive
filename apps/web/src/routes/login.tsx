@@ -34,8 +34,6 @@ const LoginForm = () => {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }: { value: LoginForm }) => {
-      console.log(value);
-
       try {
         const result = await authClient.signIn.email({
           email: value.email,
@@ -47,8 +45,7 @@ const LoginForm = () => {
           return;
         }
 
-        // TODO:
-        navigate({ to: "/admin" });
+        navigate({ to: "/dashboard" });
       } catch (err) {
         console.log(err);
       }
