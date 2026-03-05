@@ -170,7 +170,7 @@ async function seed(): Promise<void> {
   console.log("[4/4] Stocks");
   await seedStocks(userIds.admin);
 
-  console.log("Done seeding database\n");
+  console.log("Done seeding database");
 }
 
 seed()
