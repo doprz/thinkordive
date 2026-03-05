@@ -143,7 +143,7 @@ async function seedStocks(adminId: string): Promise<void> {
       price,
     });
 
-    console.log(`  ✓  Stock: ${s.ticker} @ $${s.price}`);
+    console.log(`  Stock: ${s.ticker} @ $${s.price}`);
   }
 }
 
