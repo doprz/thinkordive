@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { stockPrices } from "@/server/db/schema";
 import { db } from "./db/init";
 
@@ -34,10 +34,22 @@ export const getStocksWithLatestPrice = createServerFn().handler(async () => {
   }[];
 });
 
+export type RangeKey = "1D" | "1W" | "1M" | "1Y";
+
+export const RANGE_DAYS: Record<RangeKey, number> = {
+  "1D": 1,
+  "1W": 7,
+  "1M": 30,
+  "1Y": 365,
+};
+
 // 90-day 1d candles for the chart
 export const getStockPriceHistory = createServerFn()
-  .inputValidator((stockId: string) => stockId)
-  .handler(async ({ data: stockId }) => {
+  .inputValidator((input: { stockId: string; range: RangeKey }) => input)
+  .handler(async ({ data: { stockId, range } }) => {
+    const since = new Date();
+    since.setDate(since.getDate() - RANGE_DAYS[range]);
+
     return db
       .select({
         timestamp: stockPrices.timestamp,
@@ -49,8 +61,11 @@ export const getStockPriceHistory = createServerFn()
       })
       .from(stockPrices)
       .where(
-        and(eq(stockPrices.stockId, stockId), eq(stockPrices.interval, "1d")),
+        and(
+          eq(stockPrices.stockId, stockId),
+          eq(stockPrices.interval, "1d"),
+          gte(stockPrices.timestamp, since),
+        ),
       )
-      .orderBy(stockPrices.timestamp)
-      .limit(90);
+      .orderBy(stockPrices.timestamp);
   });

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   Area,
   AreaChart,
@@ -9,7 +10,12 @@ import {
   YAxis,
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getStockPriceHistory } from "@/server/stocks";
+import {
+  getStockPriceHistory,
+  RANGE_DAYS,
+  type RangeKey,
+} from "@/server/stocks";
+import { Button } from "./ui/button";
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -19,9 +25,10 @@ interface Props {
 }
 
 export function StockPriceChart({ stockId }: Props) {
+  const [range, setRange] = useState<RangeKey>("1M");
   const { data, isLoading } = useQuery({
-    queryKey: ["stock-history", stockId],
-    queryFn: () => getStockPriceHistory({ data: stockId }),
+    queryKey: ["stock-history", stockId, range],
+    queryFn: () => getStockPriceHistory({ data: { stockId, range } }),
     staleTime: 60_000, // In ms
   });
 
@@ -45,6 +52,19 @@ export function StockPriceChart({ stockId }: Props) {
 
   return (
     <div className="h-48">
+      <div className="flex gap-1">
+        {Object.keys(RANGE_DAYS).map((r) => (
+          <Button
+            key={r}
+            variant={range === r ? "default" : "ghost"}
+            size="sm"
+            className="h-7 px-2.5 text-xs"
+            onClick={() => setRange(r as RangeKey)}
+          >
+            {r}
+          </Button>
+        ))}
+      </div>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={chartData}
