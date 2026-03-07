@@ -1,15 +1,49 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import { authMiddleware } from "@/middleware/auth";
+import { getStocksWithLatestPrice } from "@/server/stocks";
 
 export const Route = createFileRoute("/dashboard")({
   component: RouteComponent,
+  loader: () => getStocksWithLatestPrice(),
   server: {
     middleware: [authMiddleware],
   },
 });
 
+const fmt = (v: string | null, decimals = 2) =>
+  v == null
+    ? "—"
+    : parseFloat(v).toLocaleString("en-US", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+
+const fmtVol = (v: number | null) => {
+  if (v == null) return "—";
+  return v >= 1_000_000
+    ? `${(v / 1_000_000).toFixed(1)}M`
+    : `${(v / 1_000).toFixed(0)}K`;
+};
+
 function RouteComponent() {
+  // Stock logic
+  const stocks = Route.useLoaderData();
+  const [selected, setSelected] = useState<string | null>(null);
+  const selectedStock = stocks.find((s) => s.id === selected);
+
+  // Auth and session logic
   const { data: sessionData, isPending } = authClient.useSession();
   if (isPending) {
     return <div className="p-8">Loading...</div>;
@@ -22,6 +56,63 @@ function RouteComponent() {
   return (
     <div>
       <div>Hello "/dashboard"!</div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Symbol</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Sector</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+            <TableHead className="text-right">Change</TableHead>
+            <TableHead className="text-right">Volume</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {stocks.map((s) => {
+            const up = parseFloat(s.change_pct ?? "0") >= 0;
+            const isSelected = s.id === selected;
+            return (
+              <TableRow
+                key={s.id}
+                onClick={() => setSelected(isSelected ? null : s.id)}
+                className={cn(
+                  "cursor-pointer transition-colors",
+                  isSelected && "bg-muted",
+                )}
+              >
+                <TableCell className="font-mono font-semibold">
+                  {s.symbol}
+                </TableCell>
+                <TableCell className="text-muted-foreground max-w-[160px] truncate">
+                  {s.name}
+                </TableCell>
+                <TableCell>
+                  {s.sector && (
+                    <Badge variant="secondary" className="text-xs font-normal">
+                      {s.sector}
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="text-right font-medium">
+                  ${fmt(s.close)}
+                </TableCell>
+                <TableCell
+                  className={cn(
+                    "text-right font-medium tabular-nums",
+                    up ? "text-emerald-500" : "text-red-500",
+                  )}
+                >
+                  {up ? "+" : ""}
+                  {fmt(s.change_pct)}%
+                </TableCell>
+                <TableCell className="text-right text-muted-foreground">
+                  {fmtVol(s.volume)}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 }
