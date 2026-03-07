@@ -106,7 +106,6 @@ src
 5. Seed the database with initial data:
     ```sh
     bun run db:seed
-    bun run db:init-admin
     ```
 
 ### Running the Application
