@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,8 @@ const signupSchema = z
 type SignupForm = z.infer<typeof signupSchema>;
 
 const SignupForm = () => {
+  const navigate = useNavigate();
+
   const form = useForm({
     validators: {
       onSubmit: signupSchema,
@@ -58,13 +60,14 @@ const SignupForm = () => {
           name: value.name,
           email: value.email,
           password: value.password,
-          callbackURL: "/dashboard", // BUG: This isn't redirecting
         });
 
         if (result.error) {
           console.log("Signup failed");
           return;
         }
+
+        await navigate({ to: "/dashboard" });
       } catch (err) {
         console.log(err);
       }
@@ -88,7 +91,7 @@ const SignupForm = () => {
         </div>
         <form.Field
           name="name"
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
+          // biome-ignore lint/correctness/noChildrenProp: TODO:
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -110,7 +113,7 @@ const SignupForm = () => {
         />
         <form.Field
           name="email"
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
+          // biome-ignore lint/correctness/noChildrenProp: TODO:
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -132,7 +135,7 @@ const SignupForm = () => {
         />
         <form.Field
           name="password"
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
+          // biome-ignore lint/correctness/noChildrenProp: TODO:
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -157,7 +160,7 @@ const SignupForm = () => {
         />
         <form.Field
           name="confirmPassword"
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
+          // biome-ignore lint/correctness/noChildrenProp: TODO:
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
