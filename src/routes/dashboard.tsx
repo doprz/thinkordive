@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { authClient } from "@/auth/auth-client";
 import { AppSidebar } from "@/components/app-sidebar";
 import { StockPriceChart } from "@/components/stock-price-chart";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { authMiddleware } from "@/middleware/auth";
 import { getStocksWithLatestPrice } from "@/server/stocks";

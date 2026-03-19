@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/auth/auth-client";
 import { authMiddleware } from "@/middleware/auth";
 
 export const Route = createFileRoute("/debug")({
