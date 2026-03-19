@@ -16,9 +16,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { useTheme } from "@/lib/theme-provider";
+import { authMiddleware } from "@/middleware/auth";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
+  server: {
+    middleware: [authMiddleware],
+  },
 });
 
 function ThemeToggle() {

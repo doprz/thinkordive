@@ -3,6 +3,25 @@ import { createMiddleware } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@/server/auth";
 
+/**
+ * Protects guest-only routes (e.g. login, signup).
+ * Redirects authenticated users to `/dashboard`.
+ */
+export const guestMiddleware = createMiddleware().server(async ({ next }) => {
+  const headers = getRequestHeaders();
+  const session = await auth.api.getSession({ headers });
+
+  if (session) {
+    throw redirect({ to: "/dashboard" });
+  }
+
+  return await next();
+});
+
+/**
+ * Protects routes that require authentication.
+ * Redirects unauthenticated users to `/login`.
+ */
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
   const session = await auth.api.getSession({ headers });
@@ -14,6 +33,10 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
   return await next();
 });
 
+/**
+ * Protects routes that require admin privileges.
+ * Redirects unauthenticated users to `/login` and non-admin users to `/unauthorized`.
+ */
 export const adminMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
   const session = await auth.api.getSession({ headers });

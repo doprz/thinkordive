@@ -13,9 +13,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { guestMiddleware } from "@/middleware/auth";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
+  server: {
+    middleware: [guestMiddleware],
+  },
 });
 
 const passwordSchema = z

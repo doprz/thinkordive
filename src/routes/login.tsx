@@ -13,9 +13,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { guestMiddleware } from "@/middleware/auth";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
+  server: {
+    middleware: [guestMiddleware],
+  },
 });
 
 // TODO: Add strong password validation
