@@ -12,7 +12,7 @@
       "!src/components/ui",
       "!src/routeTree.gen.ts",
       "!drizzle",
-      "worker-configuration.d.ts"
+      "!worker-configuration.d.ts"
     ]
   },
   "formatter": {

@@ -72,7 +72,7 @@ const LoginForm = () => {
         </div>
         <form.Field
           name="email"
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
+          // biome-ignore lint/correctness/noChildrenProp: TODO:
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -94,7 +94,7 @@ const LoginForm = () => {
         />
         <form.Field
           name="password"
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
+          // biome-ignore lint/correctness/noChildrenProp: TODO:
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
