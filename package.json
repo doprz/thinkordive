@@ -22,7 +22,6 @@
     "db:migrate:prod": "wrangler d1 migrations apply thinkordive-db --remote",
     "db:studio:dev": "drizzle-kit studio",
     "db:studio:prod": "NODE_ENV=production drizzle-kit studio",
-    "db:seed": "bun run src/server/db/seed.ts",
     "db:better-auth-generate": "bunx @better-auth/cli generate --output src/server/db/auth-schema.ts"
   },
   "dependencies": {
