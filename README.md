@@ -14,9 +14,9 @@ A full-stack stock trading simulation platform where users can buy and sell stoc
 
 - **Frontend**: Tanstack Start, React, TypeScript, Tailwind CSS, Shadcn w/ Base UI, and SSR support
 - **Backend**: Drizzle ORM and Better Auth
-- **Database**: PostgreSQL
-- **DevOps & Tooling**: Bun, Docker/Podman, Docker Compose, Process Compose, Biome, Nix, and EditorConfig
-- **Deployment**: TBD
+- **Database**: Cloudflare D1
+- **DevOps & Tooling**: Bun, Docker/Podman, Docker Compose, Biome, Nix, EditorConfig, and Wrangler
+- **Deployment**: Cloudflare Workers + D1 Binding
 
 ## Project Structure
 
@@ -26,6 +26,7 @@ This is a Tanstack Start project with the following structure:
 src
 ├── components      # Components
 │   └── ui          # Individual ui components
+├── hooks
 ├── lib
 ├── middleware
 ├── routes
@@ -47,10 +48,6 @@ src
 
 **Option 2: Manual Setup**
 - [Bun](https://bun.com/) (latest)
-- [Process Compose](https://github.com/F1bonacc1/process-compose) (recommended for development)
-
-**DevOps + Containerization**
-- Docker/Podman
 
 ### Installation
 
@@ -81,48 +78,24 @@ src
 
 3. Set up environment variables:
 
-    Create a `.env` file in the root directory and add the necessary environment variables (refer to `.env.example`).
+    Create a `.dev.vars` file in the root directory and add the following environment variables.
+    ```
+    BETTER_AUTH_URL=http://localhost:5173
+    BETTER_AUTH_SECRET=
+    ```
 
-    Generate a Better Auth secret and add it to your `.env`:
+    Generate a Better Auth secret and add it to your `.dev.vars`:
     ```sh
     openssl rand -base64 32
     ```
 
-4. Set up the database:
-
-    Create and run a PostgreSQL database:
-    ```sh
-    # Using Docker
-    docker run --name drizzle-postgres -e POSTGRES_PASSWORD=mypassword -p 5432:5432 postgres
-
-    # Or using Podman
-    podman run --name drizzle-postgres -e POSTGRES_PASSWORD=mypassword -p 5432:5432 postgres
-    ```
-    Then push the schema using Drizzle ORM:
-    ```sh
-    bun run db:push
-    ```
-
-5. Seed the database with initial data:
-    ```sh
-    bun run db:seed
-    ```
-
 ### Running the Application
 
-From the root directory (make sure the PostgreSQL container is running):
 ```sh
 bun run dev
 ```
 
 ## Development
-
-### Process Compose
-
-Process Compose manages your development environment with automatic dependency handling:
-- PostgreSQL runs in a Podman container with health checks
-- Frontend/API starts after PostgreSQL is ready
-- Optional processes (seeding, admin init, studio) can be enabled
 
 ### Code Quality
 
