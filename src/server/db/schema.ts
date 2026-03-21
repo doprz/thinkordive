@@ -1,15 +1,14 @@
+import { sql } from "drizzle-orm";
 import {
-  bigint,
   index,
-  numeric,
-  pgEnum,
-  pgTable,
+  integer,
+  real,
+  sqliteTable,
   text,
-  timestamp,
   uniqueIndex,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 
-export const stocks = pgTable("stocks", {
+export const stocks = sqliteTable("stocks", {
   id: text("id").primaryKey(), // e.g. "AAPL" — symbol as PK keeps joins readable
   symbol: text("symbol").notNull(),
   name: text("name").notNull(),
@@ -17,55 +16,41 @@ export const stocks = pgTable("stocks", {
   industry: text("industry"), // e.g. "Consumer Electronics"
   logoUrl: text("logo_url"), // handy for dashboard cards
   description: text("description"),
-  createdAt: timestamp("created_at", { withTimezone: true })
+  createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
-    .defaultNow(),
+    .default(sql`(unixepoch())`),
 });
 
-export const intervalEnum = pgEnum("price_interval", [
-  "1m",
-  "5m",
-  "15m",
-  "30m",
-  "1h",
-  "1d",
-  "1w",
-]);
+const PRICE_INTERVALS = ["1m", "5m", "15m", "30m", "1h", "1d", "1w"] as const;
+export type PriceInterval = (typeof PRICE_INTERVALS)[number];
 
-export const stockPrices = pgTable(
+export const stockPrices = sqliteTable(
   "stock_prices",
   {
-    id: bigint("id", { mode: "number" })
-      .primaryKey()
-      .generatedAlwaysAsIdentity(),
+    id: integer("id").primaryKey({ autoIncrement: true }),
     stockId: text("stock_id")
       .notNull()
       .references(() => stocks.id, { onDelete: "cascade" }),
-    interval: intervalEnum("interval").notNull(),
-    timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
-
-    // OHLCV - stored as numeric for precision (no float rounding)
-    open: numeric("open", { precision: 18, scale: 4 }).notNull(),
-    high: numeric("high", { precision: 18, scale: 4 }).notNull(),
-    low: numeric("low", { precision: 18, scale: 4 }).notNull(),
-    close: numeric("close", { precision: 18, scale: 4 }).notNull(),
-    volume: bigint("volume", { mode: "number" }).notNull(),
-
-    // Useful for dashboard snapshot cards
-    change: numeric("change", { precision: 18, scale: 4 }), // close - prev_close
-    changePct: numeric("change_pct", { precision: 8, scale: 4 }), // % change
+    interval: text("interval", { enum: PRICE_INTERVALS }).notNull(),
+    timestamp: integer("timestamp", { mode: "timestamp" }).notNull(),
+    // OHLCV - stored as real (64-bit float)
+    open: real("open").notNull(),
+    high: real("high").notNull(),
+    low: real("low").notNull(),
+    close: real("close").notNull(),
+    volume: integer("volume").notNull(),
+    change: real("change"),
+    changePct: real("change_pct"),
   },
   (t) => [
-    // Core query pattern: "give me all 1d candles for AAPL, ordered by time"
     index("stock_prices_stock_interval_ts_idx").on(
       t.stockId,
       t.interval,
       t.timestamp,
     ),
-    // Enforce no duplicate candles for the same stock + interval + timestamp
     uniqueIndex("stock_prices_unique_candle_idx").on(
       t.stockId,
       t.interval,

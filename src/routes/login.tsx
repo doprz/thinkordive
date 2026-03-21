@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
 import { z } from "zod";
+import { authClient } from "@/auth/auth-client";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -12,7 +13,6 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
 import { guestMiddleware } from "@/middleware/auth";
 
 export const Route = createFileRoute("/login")({
@@ -72,7 +72,7 @@ const LoginForm = () => {
         </div>
         <form.Field
           name="email"
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
+          // biome-ignore lint/correctness/noChildrenProp: TODO:
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -94,7 +94,7 @@ const LoginForm = () => {
         />
         <form.Field
           name="password"
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
+          // biome-ignore lint/correctness/noChildrenProp: TODO:
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;

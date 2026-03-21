@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { authClient } from "@/auth/auth-client";
 import { AppSidebar } from "@/components/app-sidebar";
 import { StockPriceChart } from "@/components/stock-price-chart";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { authMiddleware } from "@/middleware/auth";
 import { getStocksWithLatestPrice } from "@/server/stocks";
@@ -24,14 +24,6 @@ export const Route = createFileRoute("/dashboard")({
     middleware: [authMiddleware],
   },
 });
-
-const fmt = (v: string | null, decimals = 2) =>
-  v == null
-    ? "—"
-    : parseFloat(v).toLocaleString("en-US", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
 
 const fmtVol = (v: number | null) => {
   if (v == null) return "—";
@@ -88,7 +80,7 @@ function RouteComponent() {
             </TableHeader>
             <TableBody>
               {stocks.map((s) => {
-                const up = parseFloat(s.change_pct ?? "0") >= 0;
+                const up = (s.changePct ?? 0) >= 0;
                 const isSelected = s.id === selected;
                 return (
                   <TableRow
@@ -116,7 +108,7 @@ function RouteComponent() {
                       )}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      ${fmt(s.close)}
+                      ${s.close}
                     </TableCell>
                     <TableCell
                       className={cn(
@@ -125,7 +117,7 @@ function RouteComponent() {
                       )}
                     >
                       {up ? "+" : ""}
-                      {fmt(s.change_pct)}%
+                      {s.changePct}%
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
                       {fmtVol(s.volume)}

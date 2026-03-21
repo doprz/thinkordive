@@ -1,37 +1,45 @@
 import { createServerFn } from "@tanstack/react-start";
 import { and, eq, gte, sql } from "drizzle-orm";
-import { stockPrices } from "@/server/db/schema";
+import { stockPrices, stocks } from "@/server/db/schema";
 import { db } from "./db/init";
 
-// Latest 1d candle per stock; uses DISTINCT ON for a single efficient query
+// NOTE: SQLite equivalent of LATERAL JOIN: subquery gets max timestamp per stock,
+// then we join stock_prices again on that exact timestamp to get the full row.
 export const getStocksWithLatestPrice = createServerFn().handler(async () => {
-  const rows = await db.execute(sql`
-    SELECT
-      s.id, s.symbol, s.name, s.sector, s.industry,
-      p.close, p.change, p.change_pct, p.volume, p.timestamp
-    FROM stocks s
-    LEFT JOIN LATERAL (
-      SELECT close, change, change_pct, volume, timestamp
-      FROM stock_prices
-      WHERE stock_id = s.id AND interval = '1d'
-      ORDER BY timestamp DESC
-      LIMIT 1
-    ) p ON true
-    ORDER BY s.symbol ASC
-  `);
+  const latestPerStock = db
+    .select({
+      stockId: stockPrices.stockId,
+      maxTs: sql<string>`MAX(${stockPrices.timestamp})`.as("max_ts"),
+    })
+    .from(stockPrices)
+    .where(eq(stockPrices.interval, "1d"))
+    .groupBy(stockPrices.stockId)
+    .as("latest_per_stock");
 
-  return rows.rows as {
-    id: string;
-    symbol: string;
-    name: string;
-    sector: string;
-    industry: string;
-    close: string;
-    change: string;
-    change_pct: string;
-    volume: number;
-    timestamp: string;
-  }[];
+  return db
+    .select({
+      id: stocks.id,
+      symbol: stocks.symbol,
+      name: stocks.name,
+      sector: stocks.sector,
+      industry: stocks.industry,
+      close: stockPrices.close,
+      change: stockPrices.change,
+      changePct: stockPrices.changePct,
+      volume: stockPrices.volume,
+      timestamp: stockPrices.timestamp,
+    })
+    .from(stocks)
+    .leftJoin(latestPerStock, eq(latestPerStock.stockId, stocks.id))
+    .leftJoin(
+      stockPrices,
+      and(
+        eq(stockPrices.stockId, stocks.id),
+        eq(stockPrices.interval, "1d"),
+        eq(stockPrices.timestamp, latestPerStock.maxTs),
+      ),
+    )
+    .orderBy(stocks.symbol);
 });
 
 export type RangeKey = "1D" | "1W" | "1M" | "1Y";

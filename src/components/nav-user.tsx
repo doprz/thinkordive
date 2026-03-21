@@ -1,5 +1,6 @@
 import { useRouter } from "@tanstack/react-router";
 import { CircleUserRound, EllipsisVertical, LogOut } from "lucide-react";
+import { authClient } from "@/auth/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,7 +17,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
 
 export function NavUser() {
   const router = useRouter();

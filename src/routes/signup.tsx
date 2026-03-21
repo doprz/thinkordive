@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
 import { z } from "zod";
+import { authClient } from "@/auth/auth-client";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -12,7 +13,6 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
 import { guestMiddleware } from "@/middleware/auth";
 
 export const Route = createFileRoute("/signup")({
