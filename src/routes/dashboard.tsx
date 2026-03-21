@@ -25,14 +25,6 @@ export const Route = createFileRoute("/dashboard")({
   },
 });
 
-const fmt = (v: string | null, decimals = 2) =>
-  v == null
-    ? "—"
-    : parseFloat(v).toLocaleString("en-US", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
-
 const fmtVol = (v: number | null) => {
   if (v == null) return "—";
   return v >= 1_000_000
@@ -88,7 +80,7 @@ function RouteComponent() {
             </TableHeader>
             <TableBody>
               {stocks.map((s) => {
-                const up = parseFloat(s.change_pct ?? "0") >= 0;
+                const up = (s.changePct ?? 0) >= 0;
                 const isSelected = s.id === selected;
                 return (
                   <TableRow
@@ -116,7 +108,7 @@ function RouteComponent() {
                       )}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      ${fmt(s.close)}
+                      ${s.close}
                     </TableCell>
                     <TableCell
                       className={cn(
@@ -125,7 +117,7 @@ function RouteComponent() {
                       )}
                     >
                       {up ? "+" : ""}
-                      {fmt(s.change_pct)}%
+                      {s.changePct}%
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
                       {fmtVol(s.volume)}

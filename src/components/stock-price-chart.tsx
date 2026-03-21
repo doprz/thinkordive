@@ -42,7 +42,7 @@ export function StockPriceChart({ stockId }: Props) {
 
   const chartData = data.map((p) => ({
     date: fmtDate(p.timestamp.toString()),
-    close: parseFloat(p.close),
+    close: p.close,
   }));
 
   const min = Math.min(...chartData.map((d) => d.close));
