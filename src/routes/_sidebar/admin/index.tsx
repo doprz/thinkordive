@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { authClient } from "@/auth/auth-client";
 import { adminMiddleware } from "@/middleware/auth";
 
-export const Route = createFileRoute("/admin/")({
+export const Route = createFileRoute("/_sidebar/admin/")({
   component: RouteComponent,
   server: {
     middleware: [adminMiddleware],
