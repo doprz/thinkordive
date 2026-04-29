@@ -79,15 +79,17 @@ export const getStockPriceHistory = createServerFn()
   });
 
 export const createStock = createServerFn({ method: "POST" })
-  .inputValidator((input: {
-    ticker: string;
-    companyName: string;
-    exchange: string;
-    currency: string;
-    volume: number;
-    initialPrice: number;
-    sector: string;
-  }) => input)
+  .inputValidator(
+    (input: {
+      ticker: string;
+      companyName: string;
+      exchange: string;
+      currency: string;
+      volume: number;
+      initialPrice: number;
+      sector: string;
+    }) => input,
+  )
   .handler(async ({ data }) => {
     const [stock] = await db
       .insert(stocks)
@@ -117,9 +119,9 @@ export const deleteStock = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     // 1. Delete associated price history first (foreign key constraint)
     await db.delete(stockPrices).where(eq(stockPrices.stockId, data.ticker));
-    
+
     // 2. Delete the stock itself
     await db.delete(stocks).where(eq(stocks.id, data.ticker));
-    
+
     return { success: true };
   });

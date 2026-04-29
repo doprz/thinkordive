@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { authClient } from "@/auth/auth-client";
 import { AppSidebar } from "@/components/app-sidebar";
 import { StockPriceChart } from "@/components/stock-price-chart";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
   Table,
@@ -16,8 +17,6 @@ import {
 import { cn } from "@/lib/utils";
 import { authMiddleware } from "@/middleware/auth";
 import { getStocksWithLatestPrice } from "@/server/stocks";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/dashboard")({
   component: RouteComponent,

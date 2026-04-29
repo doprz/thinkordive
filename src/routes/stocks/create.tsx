@@ -24,16 +24,14 @@ export const Route = createFileRoute("/stocks/create")({
   },
 });
 
-const EXCHANGES = [
-  { value: "NYSE", label: "NYSE", sub: "New York" },
-];
+const EXCHANGES = [{ value: "NYSE", label: "NYSE", sub: "New York" }];
 
 const CURRENCIES = ["USD"];
 
 interface StockForm {
   companyName: string;
-  ticker: string;      // The identifier (e.g., AAPL)
-  volume: string;      // Amount of shares purchased
+  ticker: string; // The identifier (e.g., AAPL)
+  volume: string; // Amount of shares purchased
   initialPrice: string;
   exchange: string;
   currency: string;
@@ -53,7 +51,7 @@ const defaultForm: StockForm = {
 const fmtPrice = (n: string, currency: string) => {
   if (!n) return "—";
   const num = parseFloat(n);
-  if (isNaN(num)) return "—";
+  if (Number.isNaN(num)) return "—";
   return `${currency} ${num.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -87,15 +85,15 @@ function RouteComponent() {
     setIsSubmitting(true);
     try {
       await createStock({
-      data: {
-        ticker: form.ticker,
-        companyName: form.companyName,
-        exchange: form.exchange,
-        currency: form.currency,
-        volume: parseInt(form.volume, 10),
-        initialPrice: parseFloat(form.initialPrice),
-        sector: form.sector,
-      }
+        data: {
+          ticker: form.ticker,
+          companyName: form.companyName,
+          exchange: form.exchange,
+          currency: form.currency,
+          volume: parseInt(form.volume, 10),
+          initialPrice: parseFloat(form.initialPrice),
+          sector: form.sector,
+        },
       });
       navigate({ to: "/dashboard" });
     } catch (err) {
@@ -242,7 +240,8 @@ function RouteComponent() {
                 </p>
                 <Select
                   value={form.currency}
-                  onValueChange={(v) => setForm((p) => ({ ...p, currency: v ?? ""}))
+                  onValueChange={(v) =>
+                    setForm((p) => ({ ...p, currency: v ?? "" }))
                   }
                 >
                   <SelectTrigger id="currency" className="w-40">
