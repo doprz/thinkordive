@@ -14,29 +14,43 @@ import {
 } from "@/components/ui/select";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { authMiddleware } from "@/middleware/auth";
 import { createStock } from "@/server/stocks";
+import { adminMiddleware } from "@/middleware/auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/stocks/create")({
   component: RouteComponent,
   server: {
-    middleware: [authMiddleware],
+    middleware: [adminMiddleware],
   },
 });
 
-const EXCHANGES = [{ value: "NYSE", label: "NYSE", sub: "New York" }];
+const EXCHANGES = [
+  { value: "NYSE", label: "NYSE", sub: "New York" },
+];
 
 const CURRENCIES = ["USD"];
 
 interface StockForm {
   companyName: string;
-  ticker: string; // The identifier (e.g., AAPL)
-  volume: string; // Amount of shares purchased
+  ticker: string;      // The identifier (e.g., AAPL)
+  volume: string;      // Amount of shares purchased
   initialPrice: string;
   exchange: string;
   currency: string;
   sector: string;
 }
+
+type ChecklistKey = "ticker" | "companyName" | "volume" | "initialPrice" | "exchange" | "currency";
+
+const CHECKLIST_FIELDS: [ChecklistKey, string][] = [
+  ["ticker", "Ticker symbol"],
+  ["companyName", "Company name"],
+  ["volume", "Volume of shares"],
+  ["initialPrice", "Initial price"],
+  ["exchange", "Exchange"],
+  ["currency", "Currency"],
+];
 
 const defaultForm: StockForm = {
   companyName: "",
@@ -85,19 +99,21 @@ function RouteComponent() {
     setIsSubmitting(true);
     try {
       await createStock({
-        data: {
-          ticker: form.ticker,
-          companyName: form.companyName,
-          exchange: form.exchange,
-          currency: form.currency,
-          volume: parseInt(form.volume, 10),
-          initialPrice: parseFloat(form.initialPrice),
-          sector: form.sector,
-        },
+      data: {
+        ticker: form.ticker,
+        companyName: form.companyName,
+        exchange: form.exchange,
+        currency: form.currency,
+        volume: parseInt(form.volume, 10),
+        initialPrice: parseFloat(form.initialPrice),
+        sector: form.sector,
+      }
       });
+      toast.success("Stock listed successfully");
       navigate({ to: "/dashboard" });
     } catch (err) {
       console.error(err);
+      toast.error("Failed to list stock. Please try again.")
     } finally {
       setIsSubmitting(false);
     }
@@ -204,7 +220,7 @@ function RouteComponent() {
                       className={cn(
                         "rounded-lg border px-3 py-2.5 text-center transition-colors",
                         form.exchange === value
-                          ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-950/30"
+                          ? "border-slate-600 bg-slate-50 dark:bg-slate-950/30"
                           : "border-border hover:border-muted-foreground/40",
                       )}
                     >
@@ -212,7 +228,7 @@ function RouteComponent() {
                         className={cn(
                           "block text-xs font-semibold",
                           form.exchange === value
-                            ? "text-emerald-800 dark:text-emerald-300"
+                            ? "text-slate-800 dark:text-slate-300"
                             : "text-foreground",
                         )}
                       >
@@ -222,7 +238,7 @@ function RouteComponent() {
                         className={cn(
                           "block text-[10px] mt-0.5",
                           form.exchange === value
-                            ? "text-emerald-600 dark:text-emerald-400"
+                            ? "text-slate-600 dark:text-slate-400"
                             : "text-muted-foreground",
                         )}
                       >
@@ -240,8 +256,7 @@ function RouteComponent() {
                 </p>
                 <Select
                   value={form.currency}
-                  onValueChange={(v) =>
-                    setForm((p) => ({ ...p, currency: v ?? "" }))
+                  onValueChange={(v) => setForm((p) => ({ ...p, currency: v ?? ""}))
                   }
                 >
                   <SelectTrigger id="currency" className="w-40">
@@ -266,7 +281,7 @@ function RouteComponent() {
                   Cancel
                 </Button>
                 <Button
-                  className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white"
+                  className="flex-1 bg-slate-700 hover:bg-slate-800 text-white"
                   disabled={!allDone || isSubmitting}
                   onClick={handleSubmit}
                 >
@@ -275,7 +290,7 @@ function RouteComponent() {
               </div>
             </div>
 
-            {/* ── Sidebar ── */}
+            {/* Sidebar */}
             <div className="flex flex-col gap-4 sticky top-6">
               {/* Live preview */}
               <div className="rounded-xl border bg-card p-4 flex flex-col gap-0">
@@ -289,6 +304,8 @@ function RouteComponent() {
                   {form.companyName || "Company name"}
                 </p>
                 {[
+                  
+
                   ["Exchange", form.exchange],
                   ["Initial price", fmtPrice(form.initialPrice, form.currency)],
                   ["Currency", form.currency],
@@ -307,7 +324,7 @@ function RouteComponent() {
                     variant="secondary"
                     className={cn(
                       allDone &&
-                        "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+                        "bg-slate-100 text-slate-800 dark:slate-950 dark:text-slate-300",
                     )}
                   >
                     {allDone ? "Ready to list" : "Draft"}
@@ -321,16 +338,7 @@ function RouteComponent() {
                   Checklist ({completedCount}/{Object.keys(checks).length})
                 </p>
                 <div className="flex flex-col gap-2">
-                  {(
-                    [
-                      ["ticker", "Ticker symbol"],
-                      ["companyName", "Company name"],
-                      ["volume", "Volume of shares"],
-                      ["initialPrice", "Initial price"],
-                      ["exchange", "Exchange"],
-                      ["currency", "Currency"],
-                    ] as [keyof typeof checks, string][]
-                  ).map(([key, label]) => (
+                  {CHECKLIST_FIELDS.map(([key, label]) => (
                     <div
                       key={key}
                       className={cn(
@@ -344,7 +352,7 @@ function RouteComponent() {
                         className={cn(
                           "w-1.5 h-1.5 rounded-full shrink-0 transition-colors",
                           checks[key]
-                            ? "bg-emerald-600"
+                            ? "bg-slate-600"
                             : "bg-muted-foreground/30",
                         )}
                       />

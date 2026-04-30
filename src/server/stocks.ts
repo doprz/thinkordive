@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { and, eq, gte, sql } from "drizzle-orm";
 import { stockPrices, stocks } from "@/server/db/schema";
 import { db } from "./db/init";
+import { z } from "zod";
 
 // NOTE: SQLite equivalent of LATERAL JOIN: subquery gets max timestamp per stock,
 // then we join stock_prices again on that exact timestamp to get the full row.
@@ -78,18 +79,18 @@ export const getStockPriceHistory = createServerFn()
       .orderBy(stockPrices.timestamp);
   });
 
+const CreateStockSchema = z.object({
+  ticker: z.string().min(1).max(5).regex(/^[A-Z]+$/, "Ticker must be uppercase letters"),
+  companyName: z.string().min(1),
+  volume: z.number().int().positive("Volume must be a positive integer"),
+  initialPrice: z.number().positive("Initial price must be greater than 0"),
+  exchange: z.string().min(1),
+  currency: z.string().min(1),
+  sector: z.string().optional(),
+});
+
 export const createStock = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      ticker: string;
-      companyName: string;
-      exchange: string;
-      currency: string;
-      volume: number;
-      initialPrice: number;
-      sector: string;
-    }) => input,
-  )
+  .inputValidator((input) => CreateStockSchema.parse(input))
   .handler(async ({ data }) => {
     const [stock] = await db
       .insert(stocks)
@@ -112,16 +113,4 @@ export const createStock = createServerFn({ method: "POST" })
     });
 
     return stock;
-  });
-
-export const deleteStock = createServerFn({ method: "POST" })
-  .inputValidator((input: { ticker: string }) => input)
-  .handler(async ({ data }) => {
-    // 1. Delete associated price history first (foreign key constraint)
-    await db.delete(stockPrices).where(eq(stockPrices.stockId, data.ticker));
-
-    // 2. Delete the stock itself
-    await db.delete(stocks).where(eq(stocks.id, data.ticker));
-
-    return { success: true };
   });

@@ -11,14 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HealthRouteImport } from './routes/health'
-import { Route as DebugRouteImport } from './routes/debug'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as SidebarRouteImport } from './routes/_sidebar'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as StocksCreateRouteImport } from './routes/stocks/create'
+import { Route as SidebarSettingsRouteImport } from './routes/_sidebar/settings'
+import { Route as SidebarDebugRouteImport } from './routes/_sidebar/debug'
+import { Route as SidebarDashboardRouteImport } from './routes/_sidebar/dashboard'
+import { Route as SidebarAdminIndexRouteImport } from './routes/_sidebar/admin/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
@@ -31,11 +32,6 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -46,14 +42,8 @@ const HealthRoute = HealthRouteImport.update({
   path: '/health',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DebugRoute = DebugRouteImport.update({
-  id: '/debug',
-  path: '/debug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const SidebarRoute = SidebarRouteImport.update({
+  id: '/_sidebar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,15 +51,30 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const StocksCreateRoute = StocksCreateRouteImport.update({
   id: '/stocks/create',
   path: '/stocks/create',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SidebarSettingsRoute = SidebarSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => SidebarRoute,
+} as any)
+const SidebarDebugRoute = SidebarDebugRouteImport.update({
+  id: '/debug',
+  path: '/debug',
+  getParentRoute: () => SidebarRoute,
+} as any)
+const SidebarDashboardRoute = SidebarDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => SidebarRoute,
+} as any)
+const SidebarAdminIndexRoute = SidebarAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => SidebarRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -79,97 +84,96 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/debug': typeof DebugRoute
   '/health': typeof HealthRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/dashboard': typeof SidebarDashboardRoute
+  '/debug': typeof SidebarDebugRoute
+  '/settings': typeof SidebarSettingsRoute
   '/stocks/create': typeof StocksCreateRoute
-  '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/admin/': typeof SidebarAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/debug': typeof DebugRoute
   '/health': typeof HealthRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/dashboard': typeof SidebarDashboardRoute
+  '/debug': typeof SidebarDebugRoute
+  '/settings': typeof SidebarSettingsRoute
   '/stocks/create': typeof StocksCreateRoute
-  '/admin': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/admin': typeof SidebarAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/debug': typeof DebugRoute
+  '/_sidebar': typeof SidebarRouteWithChildren
   '/health': typeof HealthRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/_sidebar/dashboard': typeof SidebarDashboardRoute
+  '/_sidebar/debug': typeof SidebarDebugRoute
+  '/_sidebar/settings': typeof SidebarSettingsRoute
   '/stocks/create': typeof StocksCreateRoute
-  '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_sidebar/admin/': typeof SidebarAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
-    | '/debug'
     | '/health'
     | '/login'
-    | '/settings'
     | '/signup'
     | '/unauthorized'
+    | '/dashboard'
+    | '/debug'
+    | '/settings'
     | '/stocks/create'
-    | '/admin/'
     | '/api/auth/$'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
-    | '/debug'
     | '/health'
     | '/login'
-    | '/settings'
     | '/signup'
     | '/unauthorized'
+    | '/dashboard'
+    | '/debug'
+    | '/settings'
     | '/stocks/create'
-    | '/admin'
     | '/api/auth/$'
+    | '/admin'
   id:
     | '__root__'
     | '/'
-    | '/dashboard'
-    | '/debug'
+    | '/_sidebar'
     | '/health'
     | '/login'
-    | '/settings'
     | '/signup'
     | '/unauthorized'
+    | '/_sidebar/dashboard'
+    | '/_sidebar/debug'
+    | '/_sidebar/settings'
     | '/stocks/create'
-    | '/admin/'
     | '/api/auth/$'
+    | '/_sidebar/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  DebugRoute: typeof DebugRoute
+  SidebarRoute: typeof SidebarRouteWithChildren
   HealthRoute: typeof HealthRoute
   LoginRoute: typeof LoginRoute
-  SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   StocksCreateRoute: typeof StocksCreateRoute
-  AdminIndexRoute: typeof AdminIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -189,13 +193,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -210,18 +207,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HealthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/debug': {
-      id: '/debug'
-      path: '/debug'
-      fullPath: '/debug'
-      preLoaderRoute: typeof DebugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/_sidebar': {
+      id: '/_sidebar'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof SidebarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -231,19 +221,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/stocks/create': {
       id: '/stocks/create'
       path: '/stocks/create'
       fullPath: '/stocks/create'
       preLoaderRoute: typeof StocksCreateRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_sidebar/settings': {
+      id: '/_sidebar/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SidebarSettingsRouteImport
+      parentRoute: typeof SidebarRoute
+    }
+    '/_sidebar/debug': {
+      id: '/_sidebar/debug'
+      path: '/debug'
+      fullPath: '/debug'
+      preLoaderRoute: typeof SidebarDebugRouteImport
+      parentRoute: typeof SidebarRoute
+    }
+    '/_sidebar/dashboard': {
+      id: '/_sidebar/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof SidebarDashboardRouteImport
+      parentRoute: typeof SidebarRoute
+    }
+    '/_sidebar/admin/': {
+      id: '/_sidebar/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof SidebarAdminIndexRouteImport
+      parentRoute: typeof SidebarRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -255,17 +266,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SidebarRouteChildren {
+  SidebarDashboardRoute: typeof SidebarDashboardRoute
+  SidebarDebugRoute: typeof SidebarDebugRoute
+  SidebarSettingsRoute: typeof SidebarSettingsRoute
+  SidebarAdminIndexRoute: typeof SidebarAdminIndexRoute
+}
+
+const SidebarRouteChildren: SidebarRouteChildren = {
+  SidebarDashboardRoute: SidebarDashboardRoute,
+  SidebarDebugRoute: SidebarDebugRoute,
+  SidebarSettingsRoute: SidebarSettingsRoute,
+  SidebarAdminIndexRoute: SidebarAdminIndexRoute,
+}
+
+const SidebarRouteWithChildren =
+  SidebarRoute._addFileChildren(SidebarRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
-  DebugRoute: DebugRoute,
+  SidebarRoute: SidebarRouteWithChildren,
   HealthRoute: HealthRoute,
   LoginRoute: LoginRoute,
-  SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   StocksCreateRoute: StocksCreateRoute,
-  AdminIndexRoute: AdminIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

@@ -18,7 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { useTheme } from "@/lib/theme-provider";
 import { authMiddleware } from "@/middleware/auth";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_sidebar/settings")({
   component: SettingsPage,
   server: {
     middleware: [authMiddleware],
