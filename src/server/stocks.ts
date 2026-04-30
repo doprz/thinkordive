@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { and, eq, gte, sql } from "drizzle-orm";
+import { z } from "zod";
 import { stockPrices, stocks } from "@/server/db/schema";
 import { db } from "./db/init";
-import { z } from "zod";
 
 // NOTE: SQLite equivalent of LATERAL JOIN: subquery gets max timestamp per stock,
 // then we join stock_prices again on that exact timestamp to get the full row.
@@ -80,10 +80,16 @@ export const getStockPriceHistory = createServerFn()
   });
 
 const CreateStockSchema = z.object({
-  ticker: z.string().min(1).max(5).regex(/^[A-Z]+$/, "Ticker must be uppercase letters"),
+  ticker: z
+    .string()
+    .min(1)
+    .max(5)
+    .regex(/^[A-Z]+$/, "Ticker must be uppercase letters"),
   companyName: z.string().min(1),
-  volume: z.number().int().positive("Volume must be a positive integer"),
-  initialPrice: z.number().positive("Initial price must be greater than 0"),
+  volume: z.coerce.number().int().positive("Volume must be a positive integer"),
+  initialPrice: z.coerce
+    .number()
+    .positive("Initial price must be greater than 0"),
   exchange: z.string().min(1),
   currency: z.string().min(1),
   sector: z.string().optional(),

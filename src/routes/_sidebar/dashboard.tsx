@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { authClient } from "@/auth/auth-client";
 import { StockPriceChart } from "@/components/stock-price-chart";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -48,7 +49,15 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col space-y-4 p-4">
-      <div>Hello "/dashboard"!</div>
+      <div className="flex items-center justify-between">
+        <div>Hello "/dashboard"!</div>
+        {sessionData.user.role === "admin" && (
+          <Button>
+            <Link to="/stocks/create">Add stock</Link>
+          </Button>
+        )}
+      </div>
+
       {selectedStock ? `${selectedStock.symbol}` : "Select a stock"}
       {selected ? (
         <StockPriceChart stockId={selected} />
