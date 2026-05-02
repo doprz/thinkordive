@@ -95,9 +95,9 @@ function RouteComponent() {
                   {s.name}
                 </TableCell>
                 <TableCell>
-                  {s.sector && (
+                  {s.industry && (
                     <Badge variant="secondary" className="text-xs font-normal">
-                      {s.sector}
+                      {s.industry}
                     </Badge>
                   )}
                 </TableCell>
